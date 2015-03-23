@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Machine>INSPRION</Machine>
+    <WindowsUser>Ethan</WindowsUser>
+    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
+    <SolutionConfiguration>Debug|AnyCPU</SolutionConfiguration>
+    <PackageArchitecture>neutral</PackageArchitecture>
+    <PackageIdentityName>c66776ab-7241-49eb-97fa-d60491f6f079</PackageIdentityName>
+    <IntermediateOutputPath>C:\Users\Ethan\documents\visual studio 2013\Projects\DataBinding_and_ViewTransition\DataBinding_and_ViewTransition\obj\Debug\</IntermediateOutputPath>
+    <RegisteredManifestChecksum>AD8CA795E6335AB9E92E2EA5674B8ED20D7E651A661A23DD67C3E82527181D31</RegisteredManifestChecksum>
+    <RegisteredPackageMoniker>c66776ab-7241-49eb-97fa-d60491f6f079_1.0.0.0_neutral__p545vb0z2rj50</RegisteredPackageMoniker>
+    <RegisteredUserModeAppID>c66776ab-7241-49eb-97fa-d60491f6f079_p545vb0z2rj50!App</RegisteredUserModeAppID>
+    <RegisteredPackageID>c66776ab-7241-49eb-97fa-d60491f6f079</RegisteredPackageID>
+    <RegisteredPackagePublisher>CN=Ethan</RegisteredPackagePublisher>
+    <RegisteredVersion>1.0.0.0</RegisteredVersion>
+    <JitOptimizationSuppressed>True</JitOptimizationSuppressed>
+  </PropertyGroup>
+  <ItemGroup>
+    <AppXManifest Include="C:\Users\Ethan\documents\visual studio 2013\Projects\DataBinding_and_ViewTransition\DataBinding_and_ViewTransition\bin\Debug\AppxManifest.xml">
+      <PackagePath>AppxManifest.xml</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+      <Modified>2015-03-22T06:45:12.451</Modified>
+    </AppXManifest>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxPackagedFile Include="C:\Users\Ethan\documents\visual studio 2013\Projects\DataBinding_and_ViewTransition\DataBinding_and_ViewTransition\bin\Debug\DataBinding_and_ViewTransition.exe">
+      <PackagePath>DataBinding_and_ViewTransition.exe</PackagePath>
+      <Modified>2015-03-22T15:40:54.193</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Ethan\documents\visual studio 2013\Projects\DataBinding_and_ViewTransition\DataBinding_and_ViewTransition\Assets\Logo.scale-100.png">
+      <PackagePath>Assets\Logo.scale-100.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+      <Modified>2013-09-24T16:00:42.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Ethan\documents\visual studio 2013\Projects\DataBinding_and_ViewTransition\DataBinding_and_ViewTransition\Assets\SmallLogo.scale-100.png">
+      <PackagePath>Assets\SmallLogo.scale-100.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+      <Modified>2013-09-24T16:00:42.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Ethan\documents\visual studio 2013\Projects\DataBinding_and_ViewTransition\DataBinding_and_ViewTransition\Assets\SplashScreen.scale-100.png">
+      <PackagePath>Assets\SplashScreen.scale-100.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+      <Modified>2013-09-24T16:00:42.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Ethan\documents\visual studio 2013\Projects\DataBinding_and_ViewTransition\DataBinding_and_ViewTransition\Assets\StoreLogo.scale-100.png">
+      <PackagePath>Assets\StoreLogo.scale-100.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+      <Modified>2013-09-24T16:00:42.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Ethan\documents\visual studio 2013\Projects\DataBinding_and_ViewTransition\DataBinding_and_ViewTransition\bin\Debug\App.xbf">
+      <PackagePath>App.xbf</PackagePath>
+      <Modified>2015-03-22T00:32:38.576</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Ethan\documents\visual studio 2013\Projects\DataBinding_and_ViewTransition\DataBinding_and_ViewTransition\bin\Debug\GridView.xbf">
+      <PackagePath>GridView.xbf</PackagePath>
+      <Modified>2015-03-22T08:38:06.853</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Ethan\documents\visual studio 2013\Projects\DataBinding_and_ViewTransition\DataBinding_and_ViewTransition\bin\Debug\MainPage.xbf">
+      <PackagePath>MainPage.xbf</PackagePath>
+      <Modified>2015-03-22T15:40:53.783</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Ethan\documents\visual studio 2013\Projects\DataBinding_and_ViewTransition\DataBinding_and_ViewTransition\bin\Debug\DataBinding_and_ViewTransition.xr.xml">
+      <PackagePath>DataBinding_and_ViewTransition.xr.xml</PackagePath>
+      <Modified>2015-03-22T08:38:06.805</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\Ethan\documents\visual studio 2013\Projects\DataBinding_and_ViewTransition\DataBinding_and_ViewTransition\bin\Debug\resources.pri">
+      <PackagePath>resources.pri</PackagePath>
+      <Modified>2015-03-22T06:45:12.310</Modified>
+    </AppxPackagedFile>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+</Project>
