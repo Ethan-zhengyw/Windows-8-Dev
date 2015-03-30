@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Machine>INSPRION</Machine>
+    <WindowsUser>zheng_000</WindowsUser>
+    <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
+    <SolutionConfiguration>Debug|AnyCPU</SolutionConfiguration>
+    <PackageArchitecture>neutral</PackageArchitecture>
+    <PackageIdentityName>b3cbc7ac-25e8-4dda-a091-231a51997222</PackageIdentityName>
+    <IntermediateOutputPath>C:\Users\zheng_000\Documents\Visual Studio 2013\Projects\MvvmTutorial\MvvmTutorial\obj\Debug\</IntermediateOutputPath>
+    <RegisteredManifestChecksum>69B533B0DB559A7636CD130D2BD43C47A07E8D52A51602017044F8F8C56814E5</RegisteredManifestChecksum>
+    <RegisteredPackageMoniker>b3cbc7ac-25e8-4dda-a091-231a51997222_1.0.0.0_neutral__8785rajwqkham</RegisteredPackageMoniker>
+    <RegisteredUserModeAppID>b3cbc7ac-25e8-4dda-a091-231a51997222_8785rajwqkham!App</RegisteredUserModeAppID>
+    <RegisteredPackageID>b3cbc7ac-25e8-4dda-a091-231a51997222</RegisteredPackageID>
+    <RegisteredPackagePublisher>CN=Laurent</RegisteredPackagePublisher>
+    <RegisteredVersion>1.0.0.0</RegisteredVersion>
+    <JitOptimizationSuppressed>True</JitOptimizationSuppressed>
+  </PropertyGroup>
+  <ItemGroup>
+    <AppXManifest Include="C:\Users\zheng_000\Documents\Visual Studio 2013\Projects\MvvmTutorial\MvvmTutorial\bin\Debug\AppxManifest.xml">
+      <PackagePath>AppxManifest.xml</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+      <Modified>2015-03-29T14:01:37.201</Modified>
+    </AppXManifest>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxPackagedFile Include="C:\Users\zheng_000\Documents\Visual Studio 2013\Projects\MvvmTutorial\MvvmTutorial\bin\Debug\MvvmTutorial.exe">
+      <PackagePath>MvvmTutorial.exe</PackagePath>
+      <Modified>2015-03-29T16:06:17.882</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows\v8.1\ExtensionSDKs\BehaviorsXamlSDKManaged\12.0\References\CommonConfiguration\Neutral\Microsoft.Xaml.Interactions.dll">
+      <PackagePath>Microsoft.Xaml.Interactions.dll</PackagePath>
+      <Modified>2014-04-29T06:23:50.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows\v8.1\ExtensionSDKs\BehaviorsXamlSDKManaged\12.0\References\CommonConfiguration\Neutral\Microsoft.Xaml.Interactivity.dll">
+      <PackagePath>Microsoft.Xaml.Interactivity.dll</PackagePath>
+      <Modified>2014-04-29T06:23:50.000</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\zheng_000\Documents\Visual Studio 2013\Projects\MvvmTutorial\packages\MvvmLightLibs.5.0.2.0\lib\netcore451\GalaSoft.MvvmLight.dll">
+      <PackagePath>GalaSoft.MvvmLight.dll</PackagePath>
+      <Modified>2015-03-29T11:10:10.701</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\zheng_000\Documents\Visual Studio 2013\Projects\MvvmTutorial\packages\MvvmLightLibs.5.0.2.0\lib\netcore451\GalaSoft.MvvmLight.Extras.dll">
+      <PackagePath>GalaSoft.MvvmLight.Extras.dll</PackagePath>
+      <Modified>2015-03-29T11:10:10.727</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\zheng_000\Documents\Visual Studio 2013\Projects\MvvmTutorial\packages\MvvmLightLibs.5.0.2.0\lib\netcore451\GalaSoft.MvvmLight.Platform.dll">
+      <PackagePath>GalaSoft.MvvmLight.Platform.dll</PackagePath>
+      <Modified>2015-03-29T11:10:10.766</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\zheng_000\Documents\Visual Studio 2013\Projects\MvvmTutorial\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll">
+      <PackagePath>Microsoft.Practices.ServiceLocation.dll</PackagePath>
+      <Modified>2015-03-29T11:10:06.623</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\zheng_000\Documents\Visual Studio 2013\Projects\MvvmTutorial\MvvmTutorial\Assets\Logo.scale-100.png">
+      <PackagePath>Assets\Logo.scale-100.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+      <Modified>2015-03-29T11:10:02.560</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\zheng_000\Documents\Visual Studio 2013\Projects\MvvmTutorial\MvvmTutorial\Assets\SmallLogo.scale-100.png">
+      <PackagePath>Assets\SmallLogo.scale-100.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+      <Modified>2015-03-29T11:10:02.568</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\zheng_000\Documents\Visual Studio 2013\Projects\MvvmTutorial\MvvmTutorial\Assets\SplashScreen.scale-100.png">
+      <PackagePath>Assets\SplashScreen.scale-100.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+      <Modified>2015-03-29T11:10:02.572</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\zheng_000\Documents\Visual Studio 2013\Projects\MvvmTutorial\MvvmTutorial\Assets\StoreLogo.scale-100.png">
+      <PackagePath>Assets\StoreLogo.scale-100.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+      <Modified>2015-03-29T11:10:02.576</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\zheng_000\Documents\Visual Studio 2013\Projects\MvvmTutorial\MvvmTutorial\bin\Debug\App.xbf">
+      <PackagePath>App.xbf</PackagePath>
+      <Modified>2015-03-29T11:10:20.768</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\zheng_000\Documents\Visual Studio 2013\Projects\MvvmTutorial\MvvmTutorial\bin\Debug\SecondPage.xbf">
+      <PackagePath>SecondPage.xbf</PackagePath>
+      <Modified>2015-03-29T11:10:20.772</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\zheng_000\Documents\Visual Studio 2013\Projects\MvvmTutorial\MvvmTutorial\bin\Debug\MainPage.xbf">
+      <PackagePath>MainPage.xbf</PackagePath>
+      <Modified>2015-03-29T15:30:04.072</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\zheng_000\Documents\Visual Studio 2013\Projects\MvvmTutorial\MvvmTutorial\bin\Debug\Skins\MainSkin.xbf">
+      <PackagePath>Skins\MainSkin.xbf</PackagePath>
+      <Modified>2015-03-29T11:10:20.785</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\zheng_000\Documents\Visual Studio 2013\Projects\MvvmTutorial\MvvmTutorial\bin\Debug\TestUserControl.xbf">
+      <PackagePath>TestUserControl.xbf</PackagePath>
+      <Modified>2015-03-29T11:10:20.791</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\zheng_000\Documents\Visual Studio 2013\Projects\MvvmTutorial\MvvmTutorial\bin\Debug\MvvmTutorial.xr.xml">
+      <PackagePath>MvvmTutorial.xr.xml</PackagePath>
+      <Modified>2015-03-29T15:29:34.620</Modified>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\zheng_000\Documents\Visual Studio 2013\Projects\MvvmTutorial\MvvmTutorial\bin\Debug\resources.pri">
+      <PackagePath>resources.pri</PackagePath>
+      <Modified>2015-03-29T15:30:05.097</Modified>
+    </AppxPackagedFile>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+</Project>
