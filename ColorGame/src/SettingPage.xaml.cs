@@ -1,0 +1,44 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Navigation;
+
+// “空白页”项模板在 http://go.microsoft.com/fwlink/?LinkId=234238 上有介绍
+
+namespace App1
+{
+    /// <summary>
+    /// 可用于自身或导航至 Frame 内部的空白页。
+    /// </summary>
+    public sealed partial class SettingPage : Page
+    {
+        Windows.Storage.ApplicationDataContainer localsettings;
+        public SettingPage()
+        {
+            this.InitializeComponent();
+            localsettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            hardness.Value = int.Parse(localsettings.Values["hardness"].ToString());
+        }
+
+        private void toMainPage(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(MainPage));
+        }
+
+        private void setHardness(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            if (localsettings != null)
+                localsettings.Values["hardness"] = hardness.Value.ToString();
+        }
+    }
+}

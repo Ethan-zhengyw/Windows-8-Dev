@@ -1,1 +1,0 @@
-C:\Users\Ethan\documents\visual studio 2013\Projects\DataBinding_and_ViewTransition\DataBinding_and_ViewTransition\DataBinding_and_ViewTransition.csproj;neutral

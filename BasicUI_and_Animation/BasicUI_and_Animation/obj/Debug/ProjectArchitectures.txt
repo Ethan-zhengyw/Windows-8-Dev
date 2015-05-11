@@ -1,1 +1,0 @@
-C:\Users\Ethan\Documents\Visual Studio 2013\Projects\BasicUI_and_Animation\BasicUI_and_Animation\BasicUI_and_Animation.csproj;neutral
