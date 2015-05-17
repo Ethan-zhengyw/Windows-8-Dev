@@ -1,0 +1,99 @@
+﻿<Page
+    x:Class="App1.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App1"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+    	<VisualStateManager.VisualStateGroups>
+    		<VisualStateGroup x:Name="VisualStateGroup">
+    			<VisualStateGroup.Transitions>
+    				<VisualTransition GeneratedDuration="0">
+    					<VisualTransition.GeneratedEasingFunction>
+    						<CircleEase EasingMode="EaseInOut"/>
+    					</VisualTransition.GeneratedEasingFunction>
+    					<Storyboard x:Name="swing" RepeatBehavior="10000">
+    						<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.Rotation)" Storyboard.TargetName="image">
+    							<EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+    							<EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="-45"/>
+    							<EasingDoubleKeyFrame KeyTime="0:0:1" Value="0"/>
+    							<EasingDoubleKeyFrame KeyTime="0:0:1.5" Value="45"/>
+    							<EasingDoubleKeyFrame KeyTime="0:0:2" Value="0"/>
+    						</DoubleAnimationUsingKeyFrames>
+    						<DoubleAnimation Duration="0:0:0.3" To="0" Storyboard.TargetProperty="(UIElement.Projection).(PlaneProjection.LocalOffsetY)" Storyboard.TargetName="image1" d:IsOptimized="True"/>
+    						<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="image1">
+    							<EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="-150"/>
+    							<EasingDoubleKeyFrame KeyTime="0:0:1" Value="-180"/>
+    							<EasingDoubleKeyFrame KeyTime="0:0:2" Value="0"/>
+    						</DoubleAnimationUsingKeyFrames>
+    						<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="image2">
+    							<EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="-300"/>
+    							<EasingDoubleKeyFrame KeyTime="0:0:1" Value="-400"/>
+    							<EasingDoubleKeyFrame KeyTime="0:0:2" Value="0"/>
+    						</DoubleAnimationUsingKeyFrames>
+    						<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.TranslateY)" Storyboard.TargetName="image3">
+    							<EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="50"/>
+    							<EasingDoubleKeyFrame KeyTime="0:0:1" Value="-300"/>
+    							<EasingDoubleKeyFrame KeyTime="0:0:2" Value="0"/>
+    						</DoubleAnimationUsingKeyFrames>
+    					</Storyboard>
+    				</VisualTransition>
+    			</VisualStateGroup.Transitions>
+    		</VisualStateGroup>
+    	</VisualStateManager.VisualStateGroups>
+        <Grid.Background>
+            <ImageBrush ImageSource="Assets/MainPage/background.jpg"></ImageBrush>
+        </Grid.Background>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"></ColumnDefinition>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
+            <ColumnDefinition Width="2*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="0.8*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <MediaElement Name="backgroundMusic" Source="Assets/Media/backgroundMusic.mp3" Volume="0.5" IsLooping="True" AutoPlay="False"/>
+
+        <Image Margin="0,20,0,20" Opacity="0.8" Grid.Row="1" Grid.Column="1" Source="Assets/MainPage/FreeMode.png" PointerReleased="toFreeMode" PointerEntered="zoomIn" PointerExited="zoomOut"></Image>
+        <Image Margin="0,20,0,20" Opacity="0.8" Grid.Row="1" Grid.Column="2" Source="Assets/MainPage/SpeedMode.png" PointerReleased="toSpeedMode" PointerEntered="zoomIn" PointerExited="zoomOut"></Image>
+        <Image Margin="0,20,0,20" Opacity="0.8" Grid.Row="2" Grid.Column="1" Source="Assets/MainPage/Settings.png" PointerReleased="toSettingPage" PointerEntered="zoomIn" PointerExited="zoomOut"></Image>
+        <Image Margin="0,20,0,20" Opacity="0.8" Grid.Row="2" Grid.Column="2" Source="Assets/MainPage/help.png" PointerReleased="toHelpPage" PointerEntered="zoomIn" PointerExited="zoomOut"></Image>
+
+        <Image x:Name="image" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="30,70,70,70" Opacity="1.0" Source="Assets/Rabbits/ChangeColor1.png" RenderTransformOrigin="0.5,0.5">
+        	<Image.RenderTransform>
+        		<CompositeTransform/>
+        	</Image.RenderTransform></Image>
+
+        <Image x:Name="image1" Grid.Row="2" Grid.Column="0" Stretch="None"
+               HorizontalAlignment="Center" VerticalAlignment="Center"
+            Source="Assets/Rabbits/jump2.png" RenderTransformOrigin="0.5,0.5">
+        	<Image.RenderTransform>
+        		<CompositeTransform/>
+        	</Image.RenderTransform>
+        	<Image.Projection>
+        		<PlaneProjection/>
+        	</Image.Projection></Image>
+
+        <Image x:Name="image2" Grid.Row="3" Grid.Column="3"
+               HorizontalAlignment="Left" VerticalAlignment="Top" Stretch="None"
+            Source="Assets/Rabbits/jump3.png" RenderTransformOrigin="0.5,0.5">
+        	<Image.RenderTransform>
+        		<CompositeTransform/>
+        	</Image.RenderTransform></Image>
+
+        <Image x:Name="image3" Grid.Row="2" Grid.Column="3" Stretch="None"
+               HorizontalAlignment="Center" VerticalAlignment="Center"
+            Source="Assets/Rabbits/jump1.png" RenderTransformOrigin="0.5,0.5">
+        	<Image.RenderTransform>
+        		<CompositeTransform/>
+        	</Image.RenderTransform></Image>
+    </Grid>
+</Page>
