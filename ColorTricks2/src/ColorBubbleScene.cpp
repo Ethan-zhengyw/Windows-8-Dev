@@ -1,4 +1,5 @@
-﻿#include "ColorBubbleScene.h"
+﻿#include "StartScene.h"
+#include "ColorBubbleScene.h"
 #include "SimpleAudioEngine.h"
 
 using namespace CocosDenshion;
@@ -63,6 +64,8 @@ bool ColorBubbleScene::init(PhysicsWorld* world)
 	speed = 5;
 	weaponColor = 2;
 	speedLimit = 100;
+	heroTime = 2.0f;
+	canMove = true;
 
 	Sprite* background = Sprite::create("UI/bgWithPipe.jpg");
 	background->setScaleX(visibleSize.width / background->getContentSize().width);
@@ -89,6 +92,7 @@ bool ColorBubbleScene::init(PhysicsWorld* world)
 	drawBorder();
 	spitBubbles(bubbleNum);
 	addWeapon();
+	initTopHeart();
 
 	/*SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/bgm.mp3");
 	SimpleAudioEngine::getInstance()->playBackgroundMusic("music/bgm.mp3", true);
@@ -98,6 +102,26 @@ bool ColorBubbleScene::init(PhysicsWorld* world)
 	initMouseEvent();
 	initKeyEvent();
 	initContactEvent();
+
+	// 创建右下角的菜单：暂停【继续】，回到主页
+	auto item1 = CCMenuItemImage::create("UI/action/pause.png",
+		"UI/action/pause.png", this, menu_selector(ColorBubbleScene::menuCallback));
+	item1->setScale(0.7, 0.7);
+	item1->setTag(1);
+	item1->setPosition(visibleSize.width - item1->getContentSize().width * 2.1, item1->getContentSize().height / 2 + 20);
+
+	auto item2 = CCMenuItemImage::create("UI/action/home.png",
+		"UI/action/home.png", this, menu_selector(ColorBubbleScene::menuCallback));
+	item2->setScale(0.7, 0.7);
+	item2->setTag(2);
+	item2->setPosition(visibleSize.width - item1->getContentSize().width, item1->getContentSize().height / 2 + 20);
+
+	auto menu = Menu::create(item1, item2, NULL);
+	menu->setAnchorPoint(Vec2::ZERO);
+	menu->setPosition(Vec2::ZERO);
+	this->addChild(menu);
+	menuPCItem = item1;
+
 
 	return true;
 }
@@ -225,6 +249,19 @@ void ColorBubbleScene::addWeapon()
 	// 添加武器
 	weapon = weapons.at(weaponColor - 1);
 	addChild(weapon);
+
+	// 执行3秒的闪烁动画
+	//weapon->runAction(Blink::create(3, 3));
+	weapon->setOpacity(256 / 5);
+
+	// 启动倒计时，3秒后取消无敌状态
+	canHurt = false;
+	auto callSelectorAction = CallFunc::create( std::bind(&ColorBubbleScene::hurtDelay, this) );
+	this->runAction(CCSequence::createWithTwoActions(
+		CCDelayTime::create(heroTime),
+		callSelectorAction
+	));
+
 }
 void ColorBubbleScene::spitBubbles(int bubblesNum)
 {
@@ -287,6 +324,9 @@ void ColorBubbleScene::processHiter(Sprite* hiter) {
 
 void ColorBubbleScene::hitHeart(Sprite* hiter) {
 	life++;
+
+	incTopHeart();
+
 	hiter->removeFromParent();
 }
 
@@ -304,13 +344,25 @@ void ColorBubbleScene::hitBubble(Sprite* hiter, int text) {
 			if (bubbles.at(i)->getParent() != NULL)
 				bubbles.at(i)->removeFromParent();
 		}
+
+		// 记忆试管原来的位置和旋转角度
 		Vec2 pos = weapon->getPosition();
 		float rot = weapon->getRotation();
 		weapon->removeFromParent();
 		spitBubbles(bubbleNum);
-		addWeapon();
 		weapon->setPosition(pos);
 		weapon->setRotation(rot);
+		addWeapon();
+	} else {
+
+		// 碰错了泡泡，接受惩罚
+		if (life > 0 && canHurt) {
+			life--;
+			decTopHeart();
+		} else {
+			// 分数扣完，游戏结束
+
+		}
 	}
 }
 
@@ -339,6 +391,8 @@ void ColorBubbleScene::onMouseDown(Event *event)
 }
 void ColorBubbleScene::onMouseMove(Event *event)
 {
+	if (!canMove)
+		return;
 	EventMouse *em = (EventMouse*)event;
 	float X = em->getCursorX();
 	float Y = em->getCursorY();
@@ -387,4 +441,115 @@ void ColorBubbleScene::playFireworks()
 	auto fireworks = ParticleFireworks::create();
 	fireworks->setPosition(visibleSize.width / 2, visibleSize.height / 2);
 	addChild(fireworks);
+}
+
+void ColorBubbleScene::initTopHeart()
+{
+	// 添加上面的代表生命的心型
+	for (int i = 0; i < life; i++) {
+		incTopHeart();
+	}
+}
+
+void ColorBubbleScene::incTopHeart()
+{
+	auto tmp = Sprite::create("UI/special bubbles/heart.png");
+	float scale = 0.02;
+	float cScale = 0.7;
+	tmp->setScale(scale, scale);
+	float posX = container->getPosition().x + container->getContentSize().width / 2 * cScale - (tmp->getContentSize().width * scale + 10) * (lifes.size() + 1);
+	float posY = container->getPosition().y + container->getContentSize().height / 2 * cScale + tmp->getContentSize().height * scale;
+
+	tmp->setPosition(posX, posY);
+
+	addChild(tmp);
+	lifes.pushBack(tmp);
+}
+
+void ColorBubbleScene::decTopHeart()
+{
+	lifes.at(lifes.size() - 1)->removeFromParent();
+	lifes.popBack();
+}
+
+void ColorBubbleScene::hurtDelay()
+{
+	// ((ColorBubbleScene*)Director::getInstance()->getRunningScene())->canHurt = true;
+	canHurt = true;
+	weapon->setOpacity(255);
+}
+
+void ColorBubbleScene::menuCallback(cocos2d::Ref* pSender)
+{
+	CCMenuItem* pMenuItem = (CCMenuItem *)(pSender);
+	int tag = (int)pMenuItem->getTag();
+
+	switch (tag)
+	{
+	case 1:
+		if (!canMove)
+			goon();
+		else
+			pause();
+		break;
+	case 2: 
+		Director::getInstance()->replaceScene(StartScene::createScene());
+		break;
+	default: break;
+	}
+}
+
+void ColorBubbleScene::pause()
+{
+	// 暂停的时候把所有刚体速度设置为0，同时储存他们的速度用于继续时恢复
+	hearts_speed.clear();
+	bubbles_speed.clear();
+	rainbows_speed.clear();
+	
+	for (int i = 0; i < hearts.size(); i++) {
+		hearts_speed.push_back(hearts.at(i)->getPhysicsBody()->getVelocity());
+		hearts.at(i)->getPhysicsBody()->setVelocityLimit(0);
+		hearts.at(i)->getPhysicsBody()->setVelocity(Vec2::ZERO);
+	}
+	for (int i = 0; i < bubbles.size(); i++) {
+		bubbles_speed.push_back(bubbles.at(i)->getPhysicsBody()->getVelocity());
+		bubbles.at(i)->getPhysicsBody()->setVelocityLimit(0);
+		bubbles.at(i)->getPhysicsBody()->setVelocity(Vec2::ZERO);
+	}
+	for (int i = 0; i < rainbows.size(); i++) {
+		rainbows_speed.push_back(rainbows.at(i)->getPhysicsBody()->getVelocity());
+		rainbows.at(i)->getPhysicsBody()->setVelocityLimit(0);
+		rainbows.at(i)->getPhysicsBody()->setVelocity(Vec2::ZERO);
+	}
+
+	weapon_speed = weapon->getPhysicsBody()->getVelocity();
+	weapon->getPhysicsBody()->setVelocityLimit(0);
+	weapon->getPhysicsBody()->setVelocity(Vec2::ZERO);
+
+	canMove = false;
+}
+
+void ColorBubbleScene::goon()
+{
+
+	for (int i = 0; i < hearts.size(); i++) {
+		hearts.at(i)->getPhysicsBody()->setVelocityLimit(speedLimit);
+		hearts.at(i)->getPhysicsBody()->setVelocity(hearts_speed[i]);
+	}
+	for (int i = 0; i < bubbles.size(); i++) {
+		bubbles.at(i)->getPhysicsBody()->setVelocityLimit(speedLimit);
+		bubbles.at(i)->getPhysicsBody()->setVelocity(bubbles_speed[i]);
+	}
+	for (int i = 0; i < rainbows.size(); i++) {
+		rainbows.at(i)->getPhysicsBody()->setVelocityLimit(speedLimit);
+		rainbows.at(i)->getPhysicsBody()->setVelocity(rainbows_speed[i]);
+	}
+
+	hearts_speed.clear();
+	bubbles_speed.clear();
+	rainbows_speed.clear();
+
+	weapon->getPhysicsBody()->setVelocityLimit(speedLimit);
+	weapon->getPhysicsBody()->setVelocity(weapon_speed);
+	canMove == true;
 }

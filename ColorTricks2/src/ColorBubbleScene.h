@@ -1,5 +1,6 @@
 ﻿#include "cocos2d.h"
 #include <string>
+#include <vector>
 
 USING_NS_CC;
 
@@ -49,12 +50,22 @@ public:
 	void spitBubble();
 	void addWeapon();
 
+	void hurtDelay();
+
+	void initTopHeart();
+	void incTopHeart();
+	void decTopHeart();
+
 	void processHiter(Sprite*);  // 处理被武器撞击的对象
 	void hitBubble(Sprite*, int);  // int型变量只是bubble包含的字
 	void hitHeart(Sprite*);
 	void hitRainbow(Sprite*);
 
 	void updateScore(int);
+
+	void menuCallback(cocos2d::Ref* pSender);
+	void pause();
+	void goon();
 
 private:
 	Size visibleSize;
@@ -73,6 +84,12 @@ private:
 	Vector<Sprite*> hearts;                         // type - 2
 	Vector<Sprite*> bubbles;                        // type - 1   
 	Vector<Sprite*> rainbows;                       // type - 3
+	std::vector<Vec2> hearts_speed;
+	std::vector<Vec2> bubbles_speed;
+	std::vector<Vec2> rainbows_speed;
+	Vec2 weapon_speed;
+
+	Vector<Sprite*> lifes;
 
 	Sprite* container;
 
@@ -85,4 +102,10 @@ private:
 	Label* levelLabel;
 	Label* scoreLabel1;
 	Label* scoreLabel2;
+
+	bool canHurt = false;
+	float heroTime;
+	bool canMove = true;
+
+	CCMenuItemImage* menuPCItem;  // pause / continue
 };
