@@ -67,20 +67,25 @@ public:
 	void pause();
 	void goon();
 
+	void spitRainbow();
+	void spitHeart();
+
+	void setAllWeaponAttrs();
+
 private:
 	Size visibleSize;
 	PhysicsWorld* world_;
-	bool mouseDown = false;
+	bool mouseDown;
 	float startX, startY, endX, endY;
 
 	int weaponColor;
-	Sprite* weapon;				// 当前武器            type - 0
-	float speed = 1.0;			// 武器移动的速度
+	float speed;			// 武器移动的速度
 	Vector<Sprite*> weapons;	// 有多种颜色的武器
 
 	int heartNum;				// 心型小球
 	int bubbleNum;				// 普通小球
 	int rainbowNum;				// 彩虹小球
+	Sprite* weapon;									// 当前武器            type - 0
 	Vector<Sprite*> hearts;                         // type - 2
 	Vector<Sprite*> bubbles;                        // type - 1   
 	Vector<Sprite*> rainbows;                       // type - 3
@@ -92,20 +97,25 @@ private:
 	Vector<Sprite*> lifes;
 
 	Sprite* container;
+	Sprite* handle;
+	PhysicsJointFixed* joint;
 
 	// PhysicsMaterial bf = PhysicsMaterial(0.1, 0.1, 0.1);
 	PhysicsMaterial bf = PHYSICSBODY_MATERIAL_DEFAULT;
 
-	int score = 0;
-	int life = 3;
-	float speedLimit = 300; // 难度
+	int score;
+	int life;
+	float speedLimit; // 难度
 	Label* levelLabel;
 	Label* scoreLabel1;
 	Label* scoreLabel2;
 
-	bool canHurt = false;
+	bool canHurt;
 	float heroTime;
-	bool canMove = true;
+	bool canMove;
 
 	CCMenuItemImage* menuPCItem;  // pause / continue
+
+	int growRate;  // 吐出更多气泡的可能
+	int bubbleToSpitNum;
 };

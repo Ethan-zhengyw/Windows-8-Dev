@@ -1,5 +1,10 @@
 ﻿#include "StartScene.h"
+#include "HelpScene.h"
+#include "SettingScene.h"
 #include "ColorBubbleScene.h"
+#include "SimpleAudioEngine.h"
+
+using namespace CocosDenshion;
 
 USING_NS_CC;
 
@@ -30,6 +35,7 @@ bool StartScene::init()
     
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
 
     // add "StartScene" splash screen"
     auto background = Sprite::create("UI/homeBG.jpg");
@@ -75,8 +81,12 @@ void StartScene::menuCallback(cocos2d::Ref* pSender)
 	case 1:
 		Director::getInstance()->replaceScene(ColorBubbleScene::createScene());
 		break;
-	case 2: break;
-	case 3: break;
+	case 2:
+		Director::getInstance()->replaceScene(HelpScene::createScene());
+		break;
+	case 3:
+		Director::getInstance()->replaceScene(SettingScene::createScene());
+		break;
 	default: break;
 	}
 }

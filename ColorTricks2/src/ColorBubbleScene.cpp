@@ -1,6 +1,8 @@
 ﻿#include "StartScene.h"
 #include "ColorBubbleScene.h"
 #include "SimpleAudioEngine.h"
+#include "PassScene.h"
+#include "GameOverScene.h"
 
 using namespace CocosDenshion;
 
@@ -48,51 +50,91 @@ ColorBubbleScene::~ColorBubbleScene()
 
 bool ColorBubbleScene::init(PhysicsWorld* world)
 {
+	this->removeAllChildren();
+	weapons.clear();	
+	hearts.clear();
+	bubbles.clear();                       
+	rainbows.clear();
+	hearts_speed.clear();
+	bubbles_speed.clear();
+	rainbows_speed.clear();
+
+	if (UserDefault::getInstance()->getBoolForKey("isEf"))
+		SimpleAudioEngine::getInstance()->playEffect("music/StartSound.mp3");
+
 	srand(time(NULL));
 	if (!Layer::init())
 	{
 		return false;
 	}
 
+	switch (UserDefault::getInstance()->getIntegerForKey("diff"))
+	{
+	case -1:
+		speed = 4;
+		bf = PHYSICSBODY_MATERIAL_DEFAULT;
+		speedLimit = 300;
+		growRate = 80;
+		break;
+	case 0:
+		speed = 3;
+		bf = PhysicsMaterial(1, 0.1, 0.1);
+		speedLimit = 500;
+		growRate = 70;
+		break;
+	case 1:
+		speed = 2;
+		bf = PhysicsMaterial(0.1, 0.1, 0.1);
+		speedLimit = 700;
+		growRate = 50;
+		break;
+	default:
+		break;
+	}
 
 	world_ = world;
 	visibleSize = Director::getInstance()->getVisibleSize();
 
+	weapon = NULL;
 	rainbowNum = 1;
-	heartNum = 2;  
+	heartNum = 1;  
 	bubbleNum = 8;
-	speed = 5;
-	weaponColor = 2;
-	speedLimit = 100;
+	score = 0;
+	life = 3;
+	UserDefault::getInstance()->setIntegerForKey("life", 3);
+	weaponColor = random(1, 8);
 	heroTime = 2.0f;
 	canMove = true;
+	canHurt = false;
+	handle = NULL;
 
-	Sprite* background = Sprite::create("UI/bgWithPipe.jpg");
+	Sprite* background = Sprite::create("UI/background.jpg");
 	background->setScaleX(visibleSize.width / background->getContentSize().width);
 	background->setScaleY(visibleSize.height / background->getContentSize().height);
 	background->setPosition(visibleSize.width / 2, visibleSize.height / 2);
 	addChild(background);
 
-	levelLabel = Label::createWithTTF("LEVEL 1", "fonts/Marker Felt.ttf", 35);
+
+	levelLabel = Label::createWithTTF("LEVEL 1", "fonts/STHUPO.ttf", 35);
 	levelLabel->setPosition(200, visibleSize.height - 50);
 	levelLabel->setColor(Color3B(11, 59, 73));
 	addChild(levelLabel);
 
-	scoreLabel1 = Label::createWithTTF("SCORE", "fonts/Marker Felt.ttf", 35);
+	scoreLabel1 = Label::createWithTTF("SCORE", "fonts/STHUPO.ttf", 35);
 	scoreLabel1->setPosition(800, visibleSize.height / 2 + 100);
 	scoreLabel1->setColor(Color3B(11, 59, 73));
 	addChild(scoreLabel1);
 
-	scoreLabel2 = Label::createWithTTF("0", "fonts/Marker Felt.ttf", 50);
+	scoreLabel2 = Label::createWithTTF("0", "fonts/STHUPO.ttf", 70);
 	scoreLabel2->setPosition(820, visibleSize.height / 2 + 30);
 	scoreLabel2->setColor(Color3B(11, 59, 73));
 	addChild(scoreLabel2);
 
-	prepareSprite();
 	drawBorder();
+	initTopHeart();
+	prepareSprite();
 	spitBubbles(bubbleNum);
 	addWeapon();
-	initTopHeart();
 
 	/*SimpleAudioEngine::getInstance()->preloadBackgroundMusic("music/bgm.mp3");
 	SimpleAudioEngine::getInstance()->playBackgroundMusic("music/bgm.mp3", true);
@@ -101,7 +143,16 @@ bool ColorBubbleScene::init(PhysicsWorld* world)
 
 	initMouseEvent();
 	initKeyEvent();
+
 	initContactEvent();
+	// 坑爹的bug，第二次进入这个场景就不正常了
+	// 把碰撞检测推迟试下
+	// auto callSelectorAction = CallFunc::create(std::bind(&ColorBubbleScene::initContactEvent, this));
+	//this->runAction(CCSequence::createWithTwoActions(
+	//	CCDelayTime::create(3.0f),
+	//	callSelectorAction
+	//	));
+	// 靠!居然还是没用，见鬼了
 
 	// 创建右下角的菜单：暂停【继续】，回到主页
 	auto item1 = CCMenuItemImage::create("UI/action/pause.png",
@@ -159,10 +210,10 @@ void ColorBubbleScene::prepareSprite()
 		float h = tube->getContentSize().height;
 		float border = 20.0f;
 		Vec2 shapePoints[4] = {
-			Vec2(-w / 2, -h / 2 + border / 2 + 10),
-			Vec2(w / 2 - 10, h / 2 + border / 2 - 10),
-			Vec2(w / 2, h / 2 - border / 2),
-			Vec2(-w / 2 + 10, -h / 2 - border / 2 + 10)
+			Vec2(-w / 2, -h / 2 + border / 2 + 10),		// 左上
+			Vec2(w / 2 - 10 - w / 2, h / 2 + border / 2 - 10 - w / 2),  // 右上
+			Vec2(w / 2 - w / 2, h / 2 - border / 2 - w / 2),				// 右下
+			Vec2(-w / 2 + 10, -h / 2 - border / 2 + 10)	// 左下
 		};
 		auto body = PhysicsBody::createPolygon(shapePoints, 4, bf);
 		// auto body = PhysicsBody::createEdgeBox(tube->getContentSize(), PhysicsMaterial(1, 1, 1), 5);
@@ -178,39 +229,20 @@ void ColorBubbleScene::prepareSprite()
 		weapons.pushBack(tube);
 	 }
 
-	// 心型
-	for (int i = 0; i < heartNum; i++) {
-		auto heart = Sprite::create("UI/special bubbles/life.png");
-		float scale = 0.4 + random(-0.1, 0.3);
-		heart->setScale(scale);
-		auto body = PhysicsBody::createCircle(heart->getContentSize().width * scale / 2, bf);
-		// body->setVelocity(Vec2(100, 100));
-		body->setLinearDamping(0);
-		body->setContactTestBitmask(0x0001);
-		body->setVelocityLimit(speedLimit);
-		heart->setPhysicsBody(body);
-		heart->setPosition(500, 200);
-		heart->setTag(2);   // 2
-		hearts.pushBack(heart);
-		addChild(heart);
-	}
-
-	for (int i = 0; i < rainbowNum; i++) {
-		auto rainbow = Sprite::create("UI/special bubbles/rainbow.png");
-		float scale = 0.4 + random(-0.1, 0.3);
-		rainbow->setScale(scale);
-		auto body = PhysicsBody::createCircle(rainbow->getContentSize().width * scale / 2, bf);
-		// body->setVelocity(Vec2(100, 100));
-		body->setLinearDamping(0);
-		body->setContactTestBitmask(0x0001);
-		body->setVelocityLimit(speedLimit);
-		rainbow->setPhysicsBody(body);
-		rainbow->setPosition(500, 200);
-		rainbow->setTag(3);   // 3
-		rainbows.pushBack(rainbow);
-		addChild(rainbow);
-	}
+	// spitHeart();  // 心型
+	// spitRainbow();  // 彩虹
+	auto callSelectorAction = CallFunc::create(std::bind(&ColorBubbleScene::spitHeart, this));
+	this->runAction(CCSequence::createWithTwoActions(
+		CCDelayTime::create(random(10, 50)),
+		callSelectorAction
+	));
+	callSelectorAction = CallFunc::create(std::bind(&ColorBubbleScene::spitRainbow, this));
+	this->runAction(CCSequence::createWithTwoActions(
+		CCDelayTime::create(random(10, 50)),
+		callSelectorAction
+	));
 }
+
 void ColorBubbleScene::drawBorder()
 {
 	// 地面
@@ -243,16 +275,37 @@ void ColorBubbleScene::drawBorder()
 	container->setScale(scale);
 	container->setPosition(visibleSize.width / 2 - 100, visibleSize.height / 2);
 	addChild(container);
+
+	Sprite* pipe = Sprite::create("UI/pipe.png");
+	pipe->setPhysicsBody(PhysicsBody::createEdgeBox(pipe->getContentSize(), PhysicsMaterial(1.0, 1.0, 0.5), 10.0));
+	pipe->setPosition(container->getPosition().x - container->getContentSize().width / 2 * scale,
+		container->getPosition().y + container->getContentSize().height / 2 * scale);
+	addChild(pipe);
 }
+
+void ColorBubbleScene::setAllWeaponAttrs()
+{
+	// 设置所有武器的位置和旋转角度以及速度
+	for (int i = 0; i < weapons.size(); i++) {
+		if (weapons.at(i) == weapon)
+			continue;
+		weapons.at(i)->setPosition(weapon->getPosition());
+		weapons.at(i)->setRotation(weapon->getRotation());
+		weapons.at(i)->getPhysicsBody()->setVelocity(weapon->getPhysicsBody()->getVelocity());
+	}
+}
+
 void ColorBubbleScene::addWeapon()
 {
+	if (weapon)
+		setAllWeaponAttrs();
 	// 添加武器
 	weapon = weapons.at(weaponColor - 1);
 	addChild(weapon);
 
 	// 执行3秒的闪烁动画
 	//weapon->runAction(Blink::create(3, 3));
-	weapon->setOpacity(256 / 5);
+	weapon->setOpacity(256 / 4);
 
 	// 启动倒计时，3秒后取消无敌状态
 	canHurt = false;
@@ -262,23 +315,79 @@ void ColorBubbleScene::addWeapon()
 		callSelectorAction
 	));
 
+	if (handle == NULL) {
+		float scale = 0.25;
+		handle = Sprite::create("UI/special bubbles/rainbow.png");
+		handle->setScale(scale);
+		handle->setOpacity(0.0f);
+		handle->setPosition(weapon->getPosition().x + handle->getContentSize().width, weapon->getPosition().y + handle->getContentSize().height);
+		float w = handle->getPosition().x - 300;
+		float h = handle->getPosition().y - 300;
+		Vec2 shapePoints[4] = {
+			Vec2(w, h + 10),		// 左上
+			Vec2(w + weapon->getContentSize().width / 2 * 0.5 + 10, h + 10),  // 右上
+			Vec2(w + weapon->getContentSize().width / 2 * 0.5 + 10, h - 5),				// 右下
+			Vec2(w, h - 5)	// 左下
+		};
+		auto body = PhysicsBody::createPolygon(shapePoints, 4, bf);
+		body->setContactTestBitmask(0x0001);
+		body->setVelocityLimit(speedLimit);
+		body->setLinearDamping(0);
+		body->setRotationEnable(false);
+
+		handle->setPhysicsBody(body);
+		addChild(handle);
+		handle->setRotation(weapon->getRotation());
+	}
+	
 }
 void ColorBubbleScene::spitBubbles(int bubblesNum)
 {
-	for (int i = 0; i < bubblesNum; i++)
-		spitBubble();
+	speedLimit = 800;
+	bubbleToSpitNum = bubblesNum;
+	// 新增吐出多个气泡的时间间隔
+	spitBubble();
 }
 void ColorBubbleScene::spitBubble()
 {
-	int color = random(0, 7);
 	int text = random(0, 7);
+	int color, target;
 
-	int target = color * 8 + text;
-	weaponColor = text + 1;
+	do {
+		color = random(0, 7);
+		target = color * 8 + text;
+	} while (bubbles.at(target)->getParent() != NULL);
+
+	for (int i = 0; i < 64; i++) {
+		if (bubbles.at(i)->getParent() != NULL) {
+			weaponColor = bubbles.at(i)->getTag() % 100 / 10;
+			break;
+		}
+	}
+
 	if (bubbles.at(target)->getParent() == NULL) {
+		if (UserDefault::getInstance()->getBoolForKey("isEf"))
+			SimpleAudioEngine::getInstance()->playEffect("music/HitSound.wav");
+
 		addChild(bubbles.at(target));
-		bubbles.at(target)->getPhysicsBody()->setVelocity(Vec2(random(-100, 100), random(-100, 100)));
-		bubbles.at(target)->setPosition(Vec2(random(300, 400), random(100, 400)));
+		bubbles.at(target)->getPhysicsBody()->setVelocity(Vec2(random(10, int(speedLimit)), random(int(-speedLimit), 0)));
+		bubbles.at(target)->setPosition(container->getPosition().x - container->getContentSize().width / 2 * 0.7 + 120,
+			container->getPosition().y + container->getContentSize().height / 2 * 0.7 - 120);
+	}
+
+	bubbleToSpitNum--;
+	if (bubbleToSpitNum > 0) {
+		auto callSelectorAction = CallFunc::create(std::bind(&ColorBubbleScene::spitBubble, this));
+		this->runAction(CCSequence::createWithTwoActions(
+			CCDelayTime::create(0.5f),
+			callSelectorAction
+		));
+	} else {
+		speedLimit = 300;
+		if (weapon != NULL && weapon->getParent() != NULL) {
+			weapon->removeFromParent();
+			addWeapon();
+		}
 	}
 }
 
@@ -290,13 +399,26 @@ void ColorBubbleScene::initContactEvent()
 }
 bool ColorBubbleScene::processContact(const PhysicsContact& contact)
 {
+	if (!canHurt)
+		return true;
+
 	Sprite* spriteA = (Sprite*)contact.getShapeA()->getBody()->getNode();
 	Sprite* spriteB = (Sprite*)contact.getShapeB()->getBody()->getNode();
+
+	if (!spriteA || !spriteB)
+		return false;
+
 	int tagA = spriteA->getTag();
 	int tagB = spriteB->getTag();
 
 	int typeA = tagA % 10;
 	int typeB = tagB % 10;
+
+	if (handle != NULL && weapon != NULL) {
+		handle->setPosition(weapon->getPosition().x + handle->getContentSize().width, weapon->getPosition().y + handle->getContentSize().height);
+		handle->getPhysicsBody()->setVelocity(weapon->getPhysicsBody()->getVelocity());
+		handle->setRotation(weapon->getRotation());
+	}
 
 	if (typeA == 0)
 		processHiter(spriteA);
@@ -320,48 +442,151 @@ void ColorBubbleScene::processHiter(Sprite* hiter) {
 		hitBubble(hiter, text);
 	}
 
+	if (handle != NULL && weapon != NULL) {
+		handle->setPosition(weapon->getPosition().x + handle->getContentSize().width, weapon->getPosition().y + handle->getContentSize().height);
+		handle->getPhysicsBody()->setVelocity(weapon->getPhysicsBody()->getVelocity());
+		handle->setRotation(weapon->getRotation());
+	}
+
 }
 
 void ColorBubbleScene::hitHeart(Sprite* hiter) {
 	life++;
 
+	if (UserDefault::getInstance()->getBoolForKey("isEf"))
+		SimpleAudioEngine::getInstance()->playEffect("music/HitSound.wav");
 	incTopHeart();
 
 	hiter->removeFromParent();
+
+	updateScore(score);
+	auto callSelectorAction = CallFunc::create(std::bind(&ColorBubbleScene::spitHeart, this));
+	this->runAction(CCSequence::createWithTwoActions(
+		CCDelayTime::create(random(25, 50)),
+		callSelectorAction
+	));
+
+	if (handle != NULL && weapon != NULL) {
+		handle->setPosition(weapon->getPosition().x + handle->getContentSize().width, weapon->getPosition().y + handle->getContentSize().height);
+		handle->getPhysicsBody()->setVelocity(weapon->getPhysicsBody()->getVelocity());
+		handle->setRotation(weapon->getRotation());
+	}
+
 }
 
 void ColorBubbleScene::hitRainbow(Sprite* hiter) {
-	;
+	if (rainbows.size() <= 0)
+		return;
+
+	if (UserDefault::getInstance()->getBoolForKey("isEf"))
+		SimpleAudioEngine::getInstance()->playEffect("music/HitSound.wav");
+
+	rainbows.at(rainbows.size() - 1)->removeFromParent();
+	rainbows.popBack();
+
+	score += 20;
+	updateScore(score);
+	auto callSelectorAction = CallFunc::create(std::bind(&ColorBubbleScene::spitRainbow, this));
+	this->runAction(CCSequence::createWithTwoActions(
+		CCDelayTime::create(random(10, 50)),
+		callSelectorAction
+	));
+}
+
+void ColorBubbleScene::spitHeart()
+{
+	if (UserDefault::getInstance()->getBoolForKey("isEf"))
+		SimpleAudioEngine::getInstance()->playEffect("music/HitSound.wav");
+
+	for (int i = 0; i < heartNum; i++) {
+		auto heart = Sprite::create("UI/special bubbles/life.png");
+		float scale = 0.4 + random(-0.1, 0.3);
+		heart->setScale(scale);
+		auto body = PhysicsBody::createCircle(heart->getContentSize().width * scale / 2, bf);
+		// body->setVelocity(Vec2(100, 100));
+		body->setLinearDamping(0);
+		body->setContactTestBitmask(0x0001);
+		body->setVelocityLimit(speedLimit);
+		body->setVelocity(Vec2(1000, -1000));
+		heart->setPhysicsBody(body);
+		heart->setPosition(container->getPosition().x - container->getContentSize().width / 2 * 0.7 + 120,
+			container->getPosition().y + container->getContentSize().height / 2 * 0.7 - 120);
+		heart->setTag(2);   // 2
+		hearts.pushBack(heart);
+		addChild(heart);
+	}
+}
+
+void ColorBubbleScene::spitRainbow()
+{
+	if (UserDefault::getInstance()->getBoolForKey("isEf"))
+		SimpleAudioEngine::getInstance()->playEffect("music/HitSound.wav");
+
+	for (int i = 0; i < rainbowNum; i++) {
+		auto rainbow = Sprite::create("UI/special bubbles/rainbow.png");
+		float scale = 0.4 + random(-0.1, 0.3);
+		rainbow->setScale(scale);
+		auto body = PhysicsBody::createCircle(rainbow->getContentSize().width * scale / 2, bf);
+		body->setLinearDamping(0);
+		body->setContactTestBitmask(0x0001);
+		body->setVelocityLimit(speedLimit);
+		body->setVelocity(Vec2(1000, -1000));
+		rainbow->setPhysicsBody(body);
+		rainbow->setPosition(container->getPosition().x - container->getContentSize().width / 2 * 0.7 + 120,
+			container->getPosition().y + container->getContentSize().height / 2 * 0.7 - 120);
+		rainbow->setTag(3);   // 3
+		rainbows.pushBack(rainbow);
+		addChild(rainbow);
+	}
 }
 
 void ColorBubbleScene::hitBubble(Sprite* hiter, int text) {
+	if (!canHurt)
+		return;
+
 	if (text == weaponColor) {
 		hiter->removeFromParent();
 		score += 10;
 		updateScore(score);
 
-		for (int i = 0; i < 64; i++) {
-			if (bubbles.at(i)->getParent() != NULL)
-				bubbles.at(i)->removeFromParent();
-		}
+		//for (int i = 0; i < 64; i++) {
+		// 	if (bubbles.at(i)->getParent() != NULL)
+		//		bubbles.at(i)->removeFromParent();
+		//}
 
-		// 记忆试管原来的位置和旋转角度
-		Vec2 pos = weapon->getPosition();
-		float rot = weapon->getRotation();
 		weapon->removeFromParent();
-		spitBubbles(bubbleNum);
-		weapon->setPosition(pos);
-		weapon->setRotation(rot);
+		if (random(1, 100) > growRate)
+			spitBubbles(2);
+		else
+			// 吐出两个的可能性较小，设置这个的目的是增加小球个数，逐渐提高游戏难度
+			spitBubbles(1);  
 		addWeapon();
-	} else {
+
+	}
+	else {
 
 		// 碰错了泡泡，接受惩罚
 		if (life > 0 && canHurt) {
 			life--;
 			decTopHeart();
-		} else {
+		}
+		if (life <= 0) {
 			// 分数扣完，游戏结束
+			int highestScore = UserDefault::getInstance()->getIntegerForKey("highestScore");
 
+			if (score > highestScore)
+				UserDefault::getInstance()->setIntegerForKey("highestScore", score);
+
+			UserDefault::getInstance()->setIntegerForKey("score", score);
+
+			if (score > highestScore) {
+				Director::getInstance()->replaceScene(PassScene::createScene());  
+				init(world_);  // 我勒个去，，为什么走之前还要init才可以保证下次进来的时候和第一次进来的时候一样！！
+			}
+			else {
+				Director::getInstance()->replaceScene(GameOverScene::createScene());
+				init(world_);  
+			}
 		}
 	}
 }
@@ -407,6 +632,11 @@ void ColorBubbleScene::onMouseMove(Event *event)
 	weapon->getPhysicsBody()->setVelocity(Vec2(speedX * speed, speedY * speed));
 	// weapon->setPosition(em->getCursorX(), visibleSize.height + em->getCursorY());
 
+	if (handle != NULL && weapon != NULL) {
+		handle->setPosition(weapon->getPosition().x, weapon->getPosition().y);
+		handle->getPhysicsBody()->setVelocity(Vec2(speedX * speed, speedY * speed));
+		handle->setRotation(weapon->getRotation() - 45);
+	}
 }
 void ColorBubbleScene::onMouseUp(Event *event)
 {
@@ -416,6 +646,11 @@ void ColorBubbleScene::onMouseUp(Event *event)
 void ColorBubbleScene::onMouseScroll(Event *event) {
 	EventMouse *em = (EventMouse*)event;
 	weapon->setRotation(weapon->getRotation() + em->getScrollY() * 10);
+	if (handle != NULL && weapon != NULL) {
+		handle->setPosition(weapon->getPosition().x, weapon->getPosition().y);
+		handle->getPhysicsBody()->setVelocity(weapon->getPhysicsBody()->getVelocity());
+		handle->setRotation(weapon->getRotation() - 45);
+	}
 }
 
 void ColorBubbleScene::stopBGM()
@@ -468,6 +703,8 @@ void ColorBubbleScene::incTopHeart()
 
 void ColorBubbleScene::decTopHeart()
 {
+	if (UserDefault::getInstance()->getBoolForKey("isEf"))
+		SimpleAudioEngine::getInstance()->playEffect("music/HitSound.wav");
 	lifes.at(lifes.size() - 1)->removeFromParent();
 	lifes.popBack();
 }
@@ -492,7 +729,7 @@ void ColorBubbleScene::menuCallback(cocos2d::Ref* pSender)
 		else
 			pause();
 		break;
-	case 2: 
+	case 2:
 		Director::getInstance()->replaceScene(StartScene::createScene());
 		break;
 	default: break;
@@ -505,25 +742,21 @@ void ColorBubbleScene::pause()
 	hearts_speed.clear();
 	bubbles_speed.clear();
 	rainbows_speed.clear();
-	
+
 	for (int i = 0; i < hearts.size(); i++) {
 		hearts_speed.push_back(hearts.at(i)->getPhysicsBody()->getVelocity());
-		hearts.at(i)->getPhysicsBody()->setVelocityLimit(0);
 		hearts.at(i)->getPhysicsBody()->setVelocity(Vec2::ZERO);
 	}
 	for (int i = 0; i < bubbles.size(); i++) {
 		bubbles_speed.push_back(bubbles.at(i)->getPhysicsBody()->getVelocity());
-		bubbles.at(i)->getPhysicsBody()->setVelocityLimit(0);
 		bubbles.at(i)->getPhysicsBody()->setVelocity(Vec2::ZERO);
 	}
 	for (int i = 0; i < rainbows.size(); i++) {
 		rainbows_speed.push_back(rainbows.at(i)->getPhysicsBody()->getVelocity());
-		rainbows.at(i)->getPhysicsBody()->setVelocityLimit(0);
 		rainbows.at(i)->getPhysicsBody()->setVelocity(Vec2::ZERO);
 	}
 
 	weapon_speed = weapon->getPhysicsBody()->getVelocity();
-	weapon->getPhysicsBody()->setVelocityLimit(0);
 	weapon->getPhysicsBody()->setVelocity(Vec2::ZERO);
 
 	canMove = false;
@@ -532,24 +765,17 @@ void ColorBubbleScene::pause()
 void ColorBubbleScene::goon()
 {
 
-	for (int i = 0; i < hearts.size(); i++) {
-		hearts.at(i)->getPhysicsBody()->setVelocityLimit(speedLimit);
+	for (int i = 0; i < hearts.size() && i < hearts_speed.size(); i++) {
 		hearts.at(i)->getPhysicsBody()->setVelocity(hearts_speed[i]);
 	}
-	for (int i = 0; i < bubbles.size(); i++) {
-		bubbles.at(i)->getPhysicsBody()->setVelocityLimit(speedLimit);
+	for (int i = 0; i < bubbles.size() && i < bubbles_speed.size(); i++) {
 		bubbles.at(i)->getPhysicsBody()->setVelocity(bubbles_speed[i]);
 	}
-	for (int i = 0; i < rainbows.size(); i++) {
-		rainbows.at(i)->getPhysicsBody()->setVelocityLimit(speedLimit);
+	for (int i = 0; i < rainbows.size() && i < rainbows_speed.size(); i++) {
 		rainbows.at(i)->getPhysicsBody()->setVelocity(rainbows_speed[i]);
 	}
 
-	hearts_speed.clear();
-	bubbles_speed.clear();
-	rainbows_speed.clear();
-
-	weapon->getPhysicsBody()->setVelocityLimit(speedLimit);
 	weapon->getPhysicsBody()->setVelocity(weapon_speed);
-	canMove == true;
+
+	canMove = true;
 }
